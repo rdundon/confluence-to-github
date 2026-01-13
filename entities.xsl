@@ -49,7 +49,7 @@ Transform a Confluence XML format space export to multiple xml pages.
     </xsl:choose>
   </xsl:template>
 
-  <xsl:template match="object[@class='Page']">
+  <xsl:template match="object[@class='Page'] | object[@class='BlogPost']">
     <!-- 
       bad title characters \ / : * ? " < > |
     -->
@@ -75,6 +75,9 @@ Transform a Confluence XML format space export to multiple xml pages.
         <category><xsl:value-of select="$space-category"/></category>
         </xsl:if>
         <category>confluence</category>
+        <xsl:if test="@class='BlogPost'">
+        <category>blog</category>
+        </xsl:if>
      </page>
     </exsl:document>
   </xsl:template>
@@ -94,7 +97,7 @@ Transform a Confluence XML format space export to multiple xml pages.
       select only pages with a current version (i.e. historicalVersions
       element present)
     -->  
-    <xsl:apply-templates select="/hibernate-generic/object[@class='Page' and boolean(collection[@name='historicalVersions'])]"/>
+    <xsl:apply-templates select="/hibernate-generic/object[(@class='Page' or @class='BlogPost') and boolean(collection[@name='historicalVersions'])]"/>
 
     <!-- 
       create a mapping document for attachments to wiki images
@@ -104,7 +107,7 @@ Transform a Confluence XML format space export to multiple xml pages.
     -->  
     <exsl:document href="{$output-path}image-mappings.xml" format="xml" standalone="yes" indent="yes">
       <images>
-        <xsl:apply-templates select="/hibernate-generic/object[@class='Page' and boolean(collection[@name='historicalVersions'])]/collection[@name = 'attachments']/element[@class = 'Attachment']/id[@name = 'id']" mode="image"/>
+        <xsl:apply-templates select="/hibernate-generic/object[(@class='Page' or @class='BlogPost') and boolean(collection[@name='historicalVersions'])]/collection[@name = 'attachments']/element[@class = 'Attachment']/id[@name = 'id']" mode="image"/>
       </images>
     </exsl:document>
   </xsl:template>
