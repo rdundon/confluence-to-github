@@ -13,7 +13,7 @@ mkdir -pv out/page-xml
 mkdir -pv out/wiki/images
 
 echo "Generating page xmls and image mapping"
-xsltproc $SCRIPT_DIR/entities.xsl entities.xml
+xsltproc --stringparam dtd-path "$SCRIPT_DIR/page.dtd" $SCRIPT_DIR/entities.xsl entities.xml
 
 echo "Copying images from attachments"
 xsltproc $SCRIPT_DIR/image-mappings.xsl out/image-mappings.xml | bash
